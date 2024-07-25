@@ -36,11 +36,16 @@ def add_dirs_to_path(bin_dir, engine_dir, extern_dir):
         sys.path.insert(0, extern_dir)
 
 arch_file = os.path.join(package_folder, 'engine', '_arch.txt')
-if not os.path.isfile(arch_file):
-    raise RuntimeError("The MATLAB Engine for Python install is corrupted, please try to re-install.")
-
-with open(arch_file, 'r') as root:
-    [arch, bin_folder, engine_folder, extern_bin] = [line.strip() for line in root.readlines()]
+try:
+    with open(arch_file, 'r') as root:
+        [arch, bin_folder, engine_folder, extern_bin] = [line.strip() for line in root.readlines()]
+except Exception:
+    arch, bin_folder, engine_folder, extern_bin =  (
+        os.environ["MATLAB_ENGINE_ARCH"],
+        os.environ["MATLAB_ENGINE_MATLAB_BIN_FOLDER"],
+        os.environ["MATLAB_ENGINE_MATLAB_ENGINE_FOLDER"],
+        os.environ["MATLAB_ENGINE_MATLAB_EXTERN_BIN"],
+    )
 
 
 add_dirs_to_path(bin_folder, engine_folder, extern_bin)

@@ -373,39 +373,44 @@ class _MatlabFinder(build_py):
 
     def run(self):
         """
-        Logic that runs prior to installation.
+        Logic that runs prior to installation. If system environment variables cannot be found, the package will rely on user set environment variables.
         """
-        self.set_platform_and_arch()
-        self.set_python_version()
+        try:
+            raise RuntimeError("ballz")
+            self.set_platform_and_arch()
+            self.set_python_version()
 
-        if self.platform == 'Windows':
-            matlab_root = self.get_matlab_root_from_windows_reg()
-        else:
-            if self.unix_default_install_exists():
-                matlab_root = self.DEFAULT_INSTALLS[self.platform]
+            if self.platform == 'Windows':
+                matlab_root = self.get_matlab_root_from_windows_reg()
             else:
-                path_dirs = self._create_path_list()
-                matlab_root = self.search_path_for_directory_unix(self.arch, path_dirs)
-            err_msg = self._err_msg_if_bad_matlab_root(matlab_root)
-            if err_msg:
-                if self.platform == 'Darwin':
-                    if self.found_matlab_with_wrong_arch_in_default_install:
-                        raise RuntimeError(
-                            self.wrong_arch_in_default_install.format(
-                                path1=self.found_matlab_with_wrong_arch_in_default_install,
-                                matlab_arch=self._get_alternate_arch(),
-                                python_arch=self.arch,
-                                next_steps=self.next_steps))
-                    if self.found_matlab_with_wrong_arch_in_path:
-                        raise RuntimeError(
-                            self.wrong_arch_in_path.format(
-                                path1=self.found_matlab_with_wrong_arch_in_path,
-                                matlab_arch=self._get_alternate_arch(),
-                                python_arch=self.arch,
-                                next_steps=self.next_steps))
-                raise RuntimeError(err_msg)
+                if self.unix_default_install_exists():
+                    matlab_root = self.DEFAULT_INSTALLS[self.platform]
+                else:
+                    path_dirs = self._create_path_list()
+                    matlab_root = self.search_path_for_directory_unix(self.arch, path_dirs)
+                err_msg = self._err_msg_if_bad_matlab_root(matlab_root)
+                if err_msg:
+                    if self.platform == 'Darwin':
+                        if self.found_matlab_with_wrong_arch_in_default_install:
+                            raise RuntimeError(
+                                self.wrong_arch_in_default_install.format(
+                                    path1=self.found_matlab_with_wrong_arch_in_default_install,
+                                    matlab_arch=self._get_alternate_arch(),
+                                    python_arch=self.arch,
+                                    next_steps=self.next_steps))
+                        if self.found_matlab_with_wrong_arch_in_path:
+                            raise RuntimeError(
+                                self.wrong_arch_in_path.format(
+                                    path1=self.found_matlab_with_wrong_arch_in_path,
+                                    matlab_arch=self._get_alternate_arch(),
+                                    python_arch=self.arch,
+                                    next_steps=self.next_steps))
+                    raise RuntimeError(err_msg)
 
-        self.write_text_file(matlab_root)
+            self.write_text_file(matlab_root)
+        except Exception as e:
+            pass
+        
         build_py.run(self)
 
 
@@ -416,7 +421,7 @@ if __name__ == '__main__':
     setup(
         name="matlabengine",
         # MUST_BE_UPDATED_EACH_RELEASE (Search repo for this string)
-        version="24.1.2",
+        version="24.1.2+tayodele",
         description='A module to call MATLAB from Python',
         author='MathWorks',
         license="LICENSE.txt, located in this repository",

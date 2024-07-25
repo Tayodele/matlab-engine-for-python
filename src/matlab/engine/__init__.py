@@ -57,6 +57,15 @@ if firstExceptionMessage:
         _lines = _arch_file.readlines()
         [_arch, _bin_dir,_engine_dir, _extern_bin_dir] = [x.rstrip() for x in _lines if x.rstrip() != ""]
         _arch_file.close()
+    except Exception as e:
+        _arch, _bin_dir,_engine_dir, _extern_bin_dir =  (
+            os.environ["MATLAB_ENGINE_ARCH"],
+            os.environ["MATLAB_ENGINE_MATLAB_BIN_FOLDER"],
+            os.environ["MATLAB_ENGINE_MATLAB_ENGINE_FOLDER"],
+            os.environ["MATLAB_ENGINE_MATLAB_EXTERN_BIN"],
+        
+        )
+    try:
         sys.path.insert(0,_engine_dir)
         sys.path.insert(0,_extern_bin_dir)
 
